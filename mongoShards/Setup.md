@@ -11,7 +11,7 @@ To wipe and remove all instances of this container including its images and voum
 ```
 docker compose down --volumes --rmi all
 ```
-It removes all resources created by the compose project. Not any other containers, so it safely removes only this projects and associated files
+It removes all resources created by the compose project. Not any other containers, so it safely removes only this project and associated files
 ---
 
 ## 🧰 The Setup
