@@ -1,0 +1,52 @@
+name: mongo-sharded-cluster
+
+services:
+  configsvr1:
+    image: mongo
+    command: --replSet cfgReplSet --configsvr --port 27017
+    volumes: ["cfg1:/data/db"]
+    ports: ["26050:27017"]
+
+  configsvr2:
+    image: mongo
+    command: --replSet cfgReplSet --configsvr --port 27017
+    volumes: ["cfg2:/data/db"]
+    ports: ["26051:27017"]
+
+  configsvr3:
+    image: mongo
+    command: --replSet cfgReplSet --configsvr --port 27017
+    volumes: ["cfg3:/data/db"]
+    ports: ["26052:27017"]
+
+  shard1:
+    image: mongo
+    command: --replSet shardReplSet1 --shardsvr --port 27017
+    volumes: ["sh1:/data/db"]
+    ports: ["27018:27017"]
+
+  shard2:
+    image: mongo
+    command: --replSet shardReplSet2 --shardsvr --port 27017
+    volumes: ["sh2:/data/db"]
+    ports: ["27019:27017"]
+
+  mongos:
+    image: mongo
+    depends_on: [configsvr1, configsvr2, configsvr3, shard1, shard2]
+    command: >
+      mongos --configdb cfgReplSet/configsvr1:27017,configsvr2:27017,configsvr3:27017
+    ports: ["27017:27017"]
+    links:
+      - configsvr1
+      - configsvr2
+      - configsvr3
+      - shard1
+      - shard2
+
+volumes:
+  cfg1:
+  cfg2:
+  cfg3:
+  sh1:
+  sh2:
