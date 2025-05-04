@@ -5,6 +5,13 @@ Docker Compose and two `docker exec` commands that set up and populate our shard
 
 Lastly, you can do some manual queries that I noted at the bottom which show you if the structure is sharded or not, and also demonstrate that the data persists and gets sharded.
 
+OBS:
+To wipe and remove all instances of this container including its images and voumes (necessary if you want to rerun the setup without the old databases and data staying) then use this command:
+
+```
+docker compose down --volumes --rmi all
+```
+It removes all resources created by the compose project. Not any other containers, so it safely removes only this projects and associated files
 ---
 
 ## 🧰 The Setup
