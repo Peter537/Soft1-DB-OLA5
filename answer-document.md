@@ -6,11 +6,11 @@ Sharding is a way to make horizontal scaling, which means we distribute data acr
 
 ### b) What are the different components required to implement sharding?
 
-- Config servers: These stores the cluster's metadata (ex. mapping of data ranges to shards) and config settings. They are deployed as a replica set because they are essential for the cluster's operation.
+- **Config servers:** These stores the cluster's metadata (ex. mapping of data ranges to shards) and config settings. They are deployed as a replica set because they are essential for the cluster's operation.
 
-- Mongos: This is the query router. It is the interface between the client application and the sharded cluster. It routes queries to the appropriate shard(s) based on the metadata stored in the config servers.
+- **Mongos:** This is the query router. It is the interface between the client application and the sharded cluster. It routes queries to the appropriate shard(s) based on the metadata stored in the config servers.
 
-- Shards: These are where the data is stored. Each shard is a replica set, which means it has multiple copies of the data for redundancy and high availability.
+- **Shards:** These are where the data is stored. Each shard is a replica set, which means it has multiple copies of the data for redundancy and high availability.
 
 ### c) Explain architecture of sharding in mongoDB?
 
