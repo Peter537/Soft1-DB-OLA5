@@ -119,11 +119,3 @@ First, run the map function created above, and after that, run the reduce functi
   count: 15
 }
 ```
-
-## Optional Questions
-
-### g) Show what happens to the data when one shard is turned off.
-
-### h) Show what happens to the data when the shard rejoins.
-
-### i) Explain how you could introduce redundancy to the setup above.
