@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import json
 
 # Configure MongoDB connection
-MONGO_URI = "mongodb://localhost:27019"
+MONGO_URI = "mongodb://localhost:27017"
 DB_NAME = "testDB"
 COLLECTION_NAME = "books"
 
