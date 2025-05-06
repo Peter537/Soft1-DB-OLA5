@@ -44,6 +44,19 @@ services:
       - shard1
       - shard2
 
+  streamlit:
+    build:
+      context: .
+    command: streamlit run ./streamlit.py
+    ports:
+      - "8501:8501"
+    depends_on:
+      - mongos
+    environment:
+      - MONGO_URI=mongodb://mongos:27017
+    networks:
+      - default
+
 volumes:
   cfg1:
   cfg2:

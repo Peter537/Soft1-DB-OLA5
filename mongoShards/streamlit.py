@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import json
 
 # Configure MongoDB connection
-MONGO_URI = "mongodb://localhost:27017"
+MONGO_URI = "mongodb://mongos:27017"
 DB_NAME = "testDB"
 COLLECTION_NAME = "books"
 
@@ -18,7 +18,9 @@ def main():
     st.title("Simple MongoDB Streamlit App")
 
     db = get_db()
-    col = db[COLLECTION_NAME]
+    print("Connected to MongoDB", db.name)
+    col = db.books
+    print("Using collection", col.count_documents({}))
 
     # Section: Display first 10 documents
     st.header("Display First 10 Documents")
