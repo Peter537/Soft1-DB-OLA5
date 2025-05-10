@@ -5,7 +5,7 @@ import json
 # Configure MongoDB connection
 MONGO_URI = "mongodb://mongos:27017"
 DB_NAME = "testDB"
-COLLECTION_NAME = "books"
+COLLECTION_NAME = "tweets"
 
 # Initialize MongoDB client
 def get_db():
@@ -19,7 +19,7 @@ def main():
 
     db = get_db()
     print("Connected to MongoDB", db.name)
-    col = db.books
+    col = db.tweets
     print("Using collection", col.count_documents({}))
 
     # Section: Display first 10 documents

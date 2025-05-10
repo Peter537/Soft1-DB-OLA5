@@ -2,40 +2,40 @@ name: mongo-sharded-cluster
 
 services:
   configsvr1:
-    image: mongo
-    command: --replSet cfgReplSet --configsvr --port 27017
+    image: mongo:latest
+    command: mongod --replSet cfgReplSet --configsvr --port 27017 --bind_ip_all 
     volumes: ["cfg1:/data/db"]
     ports: ["26050:27017"]
 
   configsvr2:
-    image: mongo
-    command: --replSet cfgReplSet --configsvr --port 27017
+    image: mongo:latest
+    command: mongod --replSet cfgReplSet --configsvr --port 27017 --bind_ip_all 
     volumes: ["cfg2:/data/db"]
     ports: ["26051:27017"]
 
   configsvr3:
-    image: mongo
-    command: --replSet cfgReplSet --configsvr --port 27017
+    image: mongo:latest
+    command: mongod --replSet cfgReplSet --configsvr --port 27017 --bind_ip_all 
     volumes: ["cfg3:/data/db"]
     ports: ["26052:27017"]
 
   shard1:
-    image: mongo
-    command: --replSet shardReplSet1 --shardsvr --port 27017
+    image: mongo:latest
+    command: mongod --replSet shardReplSet1 --shardsvr --port 27017 --bind_ip_all 
     volumes: ["sh1:/data/db"]
     ports: ["27018:27017"]
 
   shard2:
-    image: mongo
-    command: --replSet shardReplSet2 --shardsvr --port 27017
+    image: mongo:latest
+    command: mongod --replSet shardReplSet2 --shardsvr --port 27017 --bind_ip_all
     volumes: ["sh2:/data/db"]
     ports: ["27019:27017"]
 
   mongos:
-    image: mongo
+    image: mongo:latest
     depends_on: [configsvr1, configsvr2, configsvr3, shard1, shard2]
     command: >
-      mongos --configdb cfgReplSet/configsvr1:27017,configsvr2:27017,configsvr3:27017
+      mongos --configdb cfgReplSet/configsvr1:27017,configsvr2:27017,configsvr3:27017 --port 27017 --bind_ip_all
     ports: ["27017:27017"]
     links:
       - configsvr1

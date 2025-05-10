@@ -1,7 +1,9 @@
 # ⚙️ Automated MongoDB Sharded Cluster Setup (Using Container Names)
 
-I had wanted to set up a python script for this but it's much easier to just do this through 3 commands:  
+We had wanted to set up a python script for this but it's much easier to just do this through a handful commands:  
 Docker Compose and two `docker exec` commands that set up and populate our shards.
+
+You could read through the explaination parts, otherwise just skim through and use the code-block parts into the terminal in order.
 
 Lastly, you can do some manual queries that I noted at the bottom which show you if the structure is sharded or not, and also demonstrate that the data persists and gets sharded.
 
@@ -25,7 +27,7 @@ It removes all resources created by the compose project. Not any other container
 - `scripts` folder:
   - `init-configsvr.js`
   - `init-shards.js`
-  - `books.json`
+  - `tweets.bson`
 
 ---
 
@@ -65,6 +67,32 @@ Get-Content .\scripts\init-shards.js | docker exec -i mongo-sharded-cluster-mong
   It will handle all queries and funnel them to/from and between the shards.
 
 ---
+## 🔎 Look at the response of this script after it is finished
+
+You should see that the response says 
+```json
+...
+ },
+  sharded: true,
+  size: 0,
+  count: 0,
+  numOrphanDocs: 0,
+  storageSize: 8192,
+  totalIndexSize: 16384,
+  totalSize: 24576,
+  indexSizes: {
+    _id_: 8192,
+    _id_hashed: 8192
+  },
+  avgObjSize: 0,
+  ns: 'testDB.tweets',
+  nindexes: 2,
+  scaleFactor: 1
+}
+```
+
+This tells us that the sharding works for the tweets collection.
+
 
 ## 📦 Importing `books.json` Into the Sharded Cluster
 
@@ -73,77 +101,14 @@ To test with real data instead of synthetic inserts, we use `books.json` from th
 First, copy the file into the `mongos` container:
 
 ```powershell
-docker cp .\scripts\books.json mongo-sharded-cluster-mongos-1:/tmp/books.json
+docker cp .\scripts\tweets.bson mongo-sharded-cluster-mongos-1:/tmp/tweets.bson
 ```
 
 Then, import it using the `mongoimport` tool **from PowerShell**, not inside the `mongosh` shell:
 
 ```powershell
-docker exec mongo-sharded-cluster-mongos-1 mongoimport --db testDB --collection books --file /tmp/books.json
+docker exec mongo-sharded-cluster-mongos-1 mongorestore -d testDB -c tweets /tmp/tweets.bson  
 ```
-
-- ⚠️ Do **not** use `--jsonArray` since the file consists of newline-separated JSON objects, not a JSON array.
-
----
-
-## 💡 Testing the Sharded Cluster
-
-After the setup is complete and data is imported, you can test the cluster by connecting to the `mongos` container and performing some manual checks.
-
-> ⚠️ Note: Docker consoles may not support `Ctrl+V` — use **right-click** to paste.
-
-```powershell
-docker exec -it mongo-sharded-cluster-mongos-1 mongosh
-```
-
-Once connected, run the following:
-
-```js
-use testDB;
-db.books.countDocuments()
-```
-
-- This counts the number of documents imported from `books.json`.
-
-```js
-db.books.stats();
-```
-
-- This shows stats for the `books` collection, including whether it’s sharded and where data is located.
-
-```js
-...
-  sharded: false,
-  size: 517474,
-  count: 431,
-  numOrphanDocs: 0,
-  storageSize: 274432,
-  totalIndexSize: 53248,
-  totalSize: 327680,
-  indexSizes: { _id_: 28672, _id_hashed: 24576 },
-  avgObjSize: 1200,
-  ns: 'testDB.books',
-  nindexes: 2,
-  scaleFactor: 1
-}
-```
-
-It will firstly show sharding to be false because we added it before shading the database. This is on purpose to show how mongos can both shard a database before adding data but also after. It will simply begin scattering it across shards and manage them all the same.
-
-### Inside the mongosh instance with [direct: mongos]:
-```
-sh.enableSharding("testDB");
-db.books.createIndex({ _id: "hashed" });
-sh.shardCollection("testDB.books", { _id: "hashed" });
-```
-running these three commands will:
-* Enable sharding for the database
-* create an indexing so mongos can track entities by index across shards
-* shard the collection on said indexes
-
-Now we can see that running the `stats()` function will return that sharding is indeed true.
-
-![alt text](./imgs/image.png)
 
 ---
 
